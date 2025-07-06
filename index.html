@@ -1,534 +1,78 @@
+
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Coding - The Future of Creation</title>
-    
+    <title>Nova Lab - AI Web Developer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Tajawal', 'sans-serif'],
+              mono: ['Source Code Pro', 'monospace'],
+            },
+            colors: {
+              'primary': '#34d399',
+              'primary-dark': '#10b981',
+              'dark-bg': '#0d1117',
+              'dark-pane': '#161b22',
+              'dark-border': 'rgba(52, 211, 153, 0.2)',
+              'light-text': '#e6edf3',
+              'medium-text': '#8b949e',
+              'dark-text': '#484f58',
+            }
+          }
+        }
+      }
+    </script>
     <style>
         body {
             font-family: 'Tajawal', sans-serif;
             background-color: #0d1117;
-            background-image: radial-gradient(circle at 1px 1px, rgba(52, 211, 153, 0.15) 1px, transparent 0);
-            background-size: 20px 20px;
+            color: #e6edf3;
+            overflow: hidden;
         }
-        .font-mono { font-family: 'Source Code Pro', monospace; }
         .glass-pane {
-            background: rgba(13, 17, 23, 0.7);
+            background: rgba(22, 27, 34, 0.7);
             backdrop-filter: blur(12px) saturate(150%);
             -webkit-backdrop-filter: blur(12px) saturate(150%);
             border: 1px solid rgba(52, 211, 153, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
         .glow-shadow { box-shadow: 0 0 20px rgba(52, 211, 153, 0.25), 0 0 8px rgba(52, 211, 153, 0.3); }
         .input-glow:focus { outline: none; box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.6); }
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.3); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(52, 211, 153, 0.5); }
-        .hidden { display: none !important; }
-        input[type="file"] { display: none; }
-        .project-item-active {
-             background-image: linear-gradient(to left, rgba(52, 211, 153, 0.15), transparent);
-             border-right: 3px solid #34d399;
-             padding-right: calc(0.5rem - 3px); /* 0.5rem is p-2, subtract border width */
+
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
+        .animate-fade-in-up { animation: fadeInUp 0.3s ease-out forwards; }
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.8.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.525.0",
+    "jszip": "https://esm.sh/jszip@3.10.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-gray-900 h-screen w-screen text-gray-200 overflow-hidden">
-
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="h-screen w-screen flex items-center justify-center bg-gray-900">
-        <div class="relative w-20 h-20">
-            <div class="absolute inset-0 border-4 border-green-500/20 rounded-full"></div>
-            <div class="absolute inset-0 border-t-4 border-green-400 rounded-full animate-spin"></div>
-            <i data-lucide="zap" class="w-10 h-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-green-400"></i>
-        </div>
-    </div>
-
-    <!-- Login Screen -->
-    <div id="login-screen" class="hidden h-screen w-screen flex flex-col items-center justify-center p-4">
-        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-10">
-            <i data-lucide="zap" class="w-16 h-16 text-green-400 glow-shadow rounded-full p-2"></i>
-            <h1 class="text-6xl font-bold text-white tracking-wider">Vibe</h1>
-        </div>
-        <div class="w-full max-w-md glass-pane p-8 rounded-2xl">
-            <h2 id="auth-title" class="text-3xl font-bold text-center text-green-400 mb-8">الوصول إلى المنصة</h2>
-            <form id="login-form" class="space-y-6">
-                <div class="relative">
-                    <i data-lucide="mail" class="absolute top-1/2 -translate-y-1/2 left-4 w-5 h-5 text-gray-500"></i>
-                    <input id="email-input" type="email" placeholder="البريد الإلكتروني" class="w-full pl-12 pr-4 py-3 bg-gray-900/50 rounded-lg border border-gray-700 focus:border-green-400 transition-all input-glow" required />
-                </div>
-                 <div class="relative">
-                    <i data-lucide="key" class="absolute top-1/2 -translate-y-1/2 left-4 w-5 h-5 text-gray-500"></i>
-                    <input id="password-input" type="password" placeholder="كلمة المرور" class="w-full pl-12 pr-4 py-3 bg-gray-900/50 rounded-lg border border-gray-700 focus:border-green-400 transition-all input-glow" required />
-                </div>
-                <p id="auth-error" class="text-red-400 text-sm text-center h-4"></p>
-                <button id="auth-submit-btn" type="submit" class="w-full bg-green-500/80 text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-500/100 transition-all disabled:bg-opacity-50 flex items-center justify-center glow-shadow">
-                    <span id="auth-submit-text">دخول</span>
-                    <i data-lucide="loader-2" id="auth-loader" class="animate-spin hidden"></i>
-                </button>
-            </form>
-            <div class="flex items-center my-6"> <hr class="flex-grow border-gray-700" /> <span class="px-4 text-gray-500 text-sm">أو</span> <hr class="flex-grow border-gray-700" /> </div>
-            <button id="google-signin-btn" class="w-full bg-gray-800/80 text-white py-3 rounded-lg font-semibold hover:bg-gray-700/100 transition-all flex items-center justify-center space-x-3 rtl:space-x-reverse">
-                <svg class="w-5 h-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                <span>المتابعة باستخدام جوجل</span>
-            </button>
-            <p class="text-center text-gray-400 mt-8 text-sm">
-                <span id="auth-toggle-text">ليس لديك حساب؟</span>
-                <button id="toggle-auth-btn" class="text-green-400 font-semibold ml-2 hover:underline">أنشئ حسابًا الآن</button>
-            </p>
-        </div>
-    </div>
-
-    <!-- App Screen -->
-    <div id="app-screen" class="hidden p-3 flex flex-col h-full space-y-3">
-        <div id="ai-loading-spinner" class="hidden absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-            <div class="relative w-24 h-24"> <div class="absolute inset-0 border-4 border-green-500/20 rounded-full"></div> <div class="absolute inset-0 border-t-4 border-green-400 rounded-full animate-spin"></div> <i data-lucide="zap" class="w-12 h-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-green-400 animate-pulse"></i> </div>
-            <p class="mt-6 text-lg font-medium text-green-400 tracking-widest">...جاري الإبداع</p>
-        </div>
-        <div id="registration-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-             <div class="glass-pane p-10 rounded-2xl max-w-lg text-center transform transition-all scale-100 glow-shadow">
-                <i data-lucide="lock" class="w-20 h-20 text-green-400 mx-auto mb-6 p-3 border-2 border-green-400/50 rounded-full"></i>
-                <h2 class="text-3xl font-bold text-white mb-4">انتهت فترة التجربة</h2>
-                <p class="text-gray-300 text-lg mb-8">لقد استمتعت بـ 3 محاولات إنشاء. لفتح إمكانيات لا محدودة وحفظ مشاريعك، يرجى تسجيل الدخول أو إنشاء حساب.</p>
-                <button id="modal-login-btn" class="w-full bg-green-500 text-gray-900 py-3 px-6 rounded-lg font-semibold text-lg hover:opacity-90 transition-all glow-shadow">تسجيل الدخول أو إنشاء حساب</button>
-            </div>
-        </div>
-
-        <main id="main-content" class="flex-grow flex w-full min-h-0 space-x-3 rtl:space-x-reverse">
-            <!-- Projects Panel -->
-            <div id="panel-projects" class="h-full glass-pane rounded-xl p-3 flex flex-col flex-shrink-0" style="width: 18%;">
-                <div class="flex justify-between items-center mb-4 px-2">
-                    <h2 class="text-base font-bold text-gray-200 tracking-wider">المشاريع</h2>
-                    <button id="new-project-btn" title="مشروع جديد" class="p-1.5 text-gray-400 hover:bg-green-500/10 hover:text-green-400 rounded-md transition-colors"><i data-lucide="plus" class="w-5 h-5"></i></button>
-                </div>
-                <div id="projects-list" class="flex-grow overflow-y-auto space-y-1"></div>
-                 <div class="border-t border-green-500/20 pt-3 mt-auto">
-                    <div class="flex items-center justify-between"> <span id="user-email-display" class="text-xs text-gray-400 truncate">...</span> <button id="signout-btn" title="تسجيل الخروج" class="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"> <i data-lucide="log-out" class="w-4 h-4"></i></button> </div>
-                 </div>
-            </div>
-
-            <div class="flex-grow flex flex-col space-y-3">
-                <!-- Code & Preview Panels -->
-                <div class="flex-grow flex space-x-3 rtl:space-x-reverse min-h-0">
-                    <div id="panel-code" class="h-full glass-pane rounded-xl font-mono text-sm text-gray-200 relative flex flex-col" style="width: 65%;">
-                        <div class="flex items-center justify-between p-3 border-b border-green-500/20 flex-shrink-0">
-                            <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                                <i data-lucide="code-2" class="w-5 h-5 text-green-400"></i>
-                                <span id="code-filename" class="text-sm text-gray-400 font-sans">...</span>
-                            </div>
-                            <div class="flex items-center space-x-1 rtl:space-x-reverse">
-                                <button id="undo-btn" title="تراجع" class="p-1.5 text-gray-400 rounded-md hover:bg-green-500/10 hover:text-green-300 disabled:text-gray-600 disabled:hover:bg-transparent transition-colors"><i data-lucide="undo-2" class="w-5 h-5"></i></button>
-                                <button id="redo-btn" title="تقدم" class="p-1.5 text-gray-400 rounded-md hover:bg-green-500/10 hover:text-green-300 disabled:text-gray-600 disabled:hover:bg-transparent transition-colors"><i data-lucide="redo-2" class="w-5 h-5"></i></button>
-                                <button id="save-btn" title="حفظ المشروع" class="p-1.5 text-gray-400 rounded-md hover:bg-green-500/10 hover:text-green-300 disabled:text-gray-600 disabled:hover:bg-transparent transition-colors"><i data-lucide="save" class="w-5 h-5"></i></button>
-                                <button id="download-btn" title="تنزيل الملف" class="p-1.5 text-gray-400 rounded-md hover:bg-green-500/10 hover:text-green-300 disabled:text-gray-600 disabled:hover:bg-transparent transition-colors"><i data-lucide="download" class="w-5 h-5"></i></button>
-                            </div>
-                        </div>
-                        <pre class="flex-grow overflow-auto p-4 whitespace-pre-wrap leading-relaxed"><code id="code-display"><!-- حدد مشروعًا أو أنشئ واحدًا جديدًا للبدء. --></code></pre>
-                    </div>
-                    <div id="panel-preview" class="h-full glass-pane rounded-xl flex flex-col" style="width: 35%;">
-                        <div class="flex items-center justify-between p-3 border-b border-green-500/20 flex-shrink-0">
-                            <div class="flex items-center space-x-1.5 rtl:space-x-reverse"><div class="w-3 h-3 bg-red-500 rounded-full"></div><div class="w-3 h-3 bg-yellow-500 rounded-full"></div><div class="w-3 h-3 bg-green-500 rounded-full"></div></div>
-                            <div class="text-sm text-gray-400 font-sans">معاينة مباشرة</div> <i data-lucide="smartphone" class="w-5 h-5 text-gray-500"></i>
-                        </div>
-                        <div class="flex-grow p-1 bg-white rounded-b-xl"> <iframe id="preview-iframe" title="Live Preview" sandbox="allow-scripts allow-same-origin" class="w-full h-full border-0"></iframe> </div>
-                    </div>
-                </div>
-                 <!-- Image Preview -->
-                 <div id="image-preview-container" class="hidden flex-shrink-0">
-                    <div class="glass-pane rounded-lg p-2 flex items-center justify-between">
-                        <div class="flex items-center space-x-3 rtl:space-x-reverse"> <img id="image-preview-thumbnail" src="" alt="Image Preview" class="w-10 h-10 object-cover rounded-md"> <span class="text-sm text-gray-300 font-sans">الصورة المرفوعة جاهزة للاستخدام</span> </div>
-                        <button id="remove-image-btn" class="p-1 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-full"> <i data-lucide="x" class="w-5 h-5"></i> </button>
-                    </div>
-                </div>
-                <!-- Prompt Footer -->
-                <footer class="flex-shrink-0">
-                    <form id="prompt-form" class="glass-pane rounded-xl p-2.5 h-full flex items-center glow-shadow w-full space-x-4 rtl:space-x-reverse">
-                        <label for="image-upload-input" class="p-2.5 text-gray-400 hover:text-green-300 transition-colors cursor-pointer rounded-lg hover:bg-green-500/10"> <i data-lucide="image-plus" class="w-6 h-6"></i> </label>
-                        <input type="file" id="image-upload-input" accept="image/png, image/jpeg, image/webp">
-                        <input id="prompt-input" name="prompt" type="text" placeholder="صف تصميمًا، ارفع صورة، أو اطلب تعديلًا..." class="w-full bg-transparent focus:outline-none text-gray-200 placeholder-gray-500 text-lg font-sans" />
-                        <button type="submit" class="bg-green-500 p-3 rounded-lg text-gray-900 hover:bg-green-400 transition-all shadow-lg shadow-green-500/20"> <i data-lucide="send-horizontal" class="w-6 h-6"></i> </button>
-                    </form>
-                </footer>
-            </div>
-        </main>
-    </div>
-
-    <!-- Firebase SDK & App Logic (UNCHANGED) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDBpYxSx0MYQ6c_RRSOLvqEEWkKOMq5Zg0",
-            authDomain: "sign-b2acd.firebaseapp.com",
-            databaseURL: "https://sign-b2acd-default-rtdb.firebaseio.com",
-            projectId: "sign-b2acd",
-            storageBucket: "sign-b2acd.appspot.com",
-            messagingSenderId: "1039449385751",
-            appId: "1:1039449385751:web:e63d9b04d5698595922552",
-            measurementId: "G-6D6JECNJ2Q"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        const DOMElements = {
-            loadingScreen: document.getElementById('loading-screen'),
-            loginScreen: document.getElementById('login-screen'),
-            appScreen: document.getElementById('app-screen'),
-            loginForm: document.getElementById('login-form'),
-            emailInput: document.getElementById('email-input'),
-            passwordInput: document.getElementById('password-input'),
-            authTitle: document.getElementById('auth-title'),
-            authSubmitBtn: document.getElementById('auth-submit-btn'),
-            authSubmitText: document.getElementById('auth-submit-text'),
-            authLoader: document.getElementById('auth-loader'),
-            authError: document.getElementById('auth-error'),
-            toggleAuthBtn: document.getElementById('toggle-auth-btn'),
-            authToggleText: document.getElementById('auth-toggle-text'),
-            googleSignInBtn: document.getElementById('google-signin-btn'),
-            userEmailDisplay: document.getElementById('user-email-display'),
-            signOutBtn: document.getElementById('signout-btn'),
-            projectsList: document.getElementById('projects-list'),
-            newProjectBtn: document.getElementById('new-project-btn'),
-            codeDisplay: document.getElementById('code-display'),
-            codeFilename: document.getElementById('code-filename'),
-            previewIframe: document.getElementById('preview-iframe'),
-            promptForm: document.getElementById('prompt-form'),
-            promptInput: document.getElementById('prompt-input'),
-            aiLoadingSpinner: document.getElementById('ai-loading-spinner'),
-            registrationModal: document.getElementById('registration-modal'),
-            modalLoginBtn: document.getElementById('modal-login-btn'),
-            saveBtn: document.getElementById('save-btn'),
-            undoBtn: document.getElementById('undo-btn'),
-            redoBtn: document.getElementById('redo-btn'),
-            downloadBtn: document.getElementById('download-btn'),
-            imageUploadInput: document.getElementById('image-upload-input'),
-            imagePreviewContainer: document.getElementById('image-preview-container'),
-            imagePreviewThumbnail: document.getElementById('image-preview-thumbnail'),
-            removeImageBtn: document.getElementById('remove-image-btn'),
-        };
-        
-        let state = {
-            user: null, isLoginMode: true, isAuthLoading: false, isAnonymous: true, page: 'loading', projects: [], activeProject: null,
-            historyIndex: -1, isAiLoading: false, usageCount: 0, uploadedImageBase64: null, uploadedImageType: null,
-            geminiApiKey: "AIzaSyC808-1YevCWCzdpaX4V8XB1UHc9OPGJik",
-        };
-
-        const render = () => {
-            DOMElements.loadingScreen.classList.add('hidden');
-            DOMElements.loginScreen.classList.add('hidden');
-            DOMElements.appScreen.classList.add('hidden');
-            if (state.page === 'loading') {
-                DOMElements.loadingScreen.classList.remove('hidden');
-            } else if (state.page === 'login') {
-                DOMElements.loginScreen.classList.remove('hidden');
-                renderLoginScreen();
-            } else if (state.page === 'app') {
-                DOMElements.appScreen.classList.remove('hidden');
-                renderAppScreen();
-            }
-        };
-        
-        const renderLoginScreen = () => {
-            DOMElements.authTitle.textContent = state.isLoginMode ? 'الوصول إلى المنصة' : 'إنشاء حساب جديد';
-            DOMElements.authSubmitText.textContent = state.isLoginMode ? 'دخول' : 'إنشاء';
-            DOMElements.authToggleText.textContent = state.isLoginMode ? 'ليس لديك حساب؟' : 'لديك حساب بالفعل؟';
-            DOMElements.toggleAuthBtn.textContent = state.isLoginMode ? 'أنشئ حسابًا الآن' : 'سجل الدخول';
-            DOMElements.authSubmitBtn.disabled = state.isAuthLoading;
-            DOMElements.authLoader.classList.toggle('hidden', !state.isAuthLoading);
-            DOMElements.authSubmitText.classList.toggle('hidden', state.isAuthLoading);
-        };
-
-        const renderAppScreen = () => {
-            DOMElements.userEmailDisplay.textContent = state.user?.email || (state.isAnonymous ? 'مستخدم ضيف' : '...');
-            DOMElements.aiLoadingSpinner.classList.toggle('hidden', !state.isAiLoading);
-            renderProjectsList();
-            renderCodeView();
-            renderPreview();
-            renderButtons();
-            renderImagePreview();
-        };
-        
-        const renderProjectsList = () => {
-            DOMElements.projectsList.innerHTML = '';
-            state.projects.forEach(p => {
-                const isActive = state.activeProject?.id === p.id;
-                const projectDiv = document.createElement('div');
-                projectDiv.className = `flex items-center space-x-3 rtl:space-x-reverse p-2 rounded-md cursor-pointer transition-all duration-200 ${isActive ? 'project-item-active' : 'hover:bg-gray-500/10'}`;
-                projectDiv.innerHTML = `<i data-lucide="file-code" class="w-5 h-5 ${isActive ? 'text-green-400' : 'text-gray-500'} transition-colors"></i><span class="text-sm truncate font-medium ${isActive ? 'text-green-300' : 'text-gray-300'}">${p.name}</span>`;
-                projectDiv.addEventListener('click', () => handleSelectProject(p));
-                DOMElements.projectsList.appendChild(projectDiv);
-            });
-            lucide.createIcons();
-        };
-
-        const renderCodeView = () => {
-            if (state.activeProject && state.historyIndex > -1) {
-                const currentCode = state.activeProject.history[state.historyIndex].code;
-                DOMElements.codeFilename.textContent = state.activeProject.name;
-                DOMElements.codeDisplay.innerHTML = syntaxHighlight(currentCode);
-            } else {
-                DOMElements.codeFilename.textContent = '...';
-                DOMElements.codeDisplay.innerHTML = `<span class="font-sans text-gray-500"><!-- حدد مشروعًا أو أنشئ واحدًا جديدًا للبدء. --></span>`;
-            }
-        };
-
-        const renderPreview = () => {
-            if (state.activeProject && state.historyIndex > -1) {
-                DOMElements.previewIframe.srcdoc = state.activeProject.history[state.historyIndex].code;
-            } else {
-                DOMElements.previewIframe.srcdoc = '';
-            }
-        };
-
-        const renderButtons = () => {
-            DOMElements.saveBtn.disabled = state.isAnonymous || !state.activeProject;
-            DOMElements.undoBtn.disabled = !state.activeProject || state.historyIndex <= 0;
-            DOMElements.redoBtn.disabled = !state.activeProject || (state.activeProject && state.historyIndex >= state.activeProject.history.length - 1);
-            DOMElements.downloadBtn.disabled = !state.activeProject;
-        };
-        
-        const renderImagePreview = () => {
-            if (state.uploadedImageBase64) {
-                DOMElements.imagePreviewContainer.classList.remove('hidden');
-                DOMElements.imagePreviewThumbnail.src = `data:${state.uploadedImageType};base64,${state.uploadedImageBase64}`;
-            } else {
-                DOMElements.imagePreviewContainer.classList.add('hidden');
-            }
-        };
-
-        const handleAuth = async (e) => {
-            e.preventDefault();
-            state.isAuthLoading = true;
-            DOMElements.authError.textContent = '';
-            renderLoginScreen();
-            try {
-                if (state.isLoginMode) {
-                    await signInWithEmailAndPassword(auth, DOMElements.emailInput.value, DOMElements.passwordInput.value);
-                } else {
-                    await createUserWithEmailAndPassword(auth, DOMElements.emailInput.value, DOMElements.passwordInput.value);
-                }
-            } catch (err) {
-                DOMElements.authError.textContent = 'فشل المصادقة. تحقق من بياناتك.';
-                console.error(err);
-            }
-            state.isAuthLoading = false;
-            renderLoginScreen();
-        };
-
-        const handleGoogleSignIn = async () => {
-            DOMElements.authError.textContent = '';
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (error) {
-                DOMElements.authError.textContent = 'فشل تسجيل الدخول باستخدام جوجل.';
-                console.error("Google Sign-In Error:", error);
-            }
-        };
-        
-        const handleSignOut = async () => {
-            await signOut(auth);
-            const apiKey = state.geminiApiKey;
-            state = { ...state, user: null, projects: [], activeProject: null, historyIndex: -1, isAnonymous: true, page: 'login', geminiApiKey: apiKey };
-        };
-        
-        const fetchProjects = async () => {
-            if (!state.user || state.isAnonymous) return;
-            state.isAiLoading = true;
-            render();
-            try {
-                const q = query(collection(db, 'users', state.user.uid, 'projects'), orderBy('createdAt', 'desc'), limit(25));
-                const querySnapshot = await getDocs(q);
-                state.projects = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return { id: doc.id, ...data, history: data.history || [{ code: data.code || '', timestamp: data.createdAt }] };
-                });
-                if (state.projects.length > 0) {
-                    handleSelectProject(state.projects[0]);
-                } else {
-                    handleNewProject();
-                }
-            } catch (err) { console.error("Error fetching projects:", err); }
-            state.isAiLoading = false;
-            render();
-        };
-
-        const handleNewProject = () => {
-            const newProject = {
-                id: `local-${Date.now()}`, name: `مشروع جديد.html`, createdAt: Timestamp.now(),
-                history: [{ code: `<div style="font-family: Tajawal, sans-serif; text-align: center; padding: 4rem; color: #555;">\n  <h1 style="font-size: 2rem; color: #111;">مرحباً بك في Vibe!</h1>\n  <p>أنت الآن جاهز للبدء. اطلب من الذكاء الاصطناعي بناء شيء ما في الشريط السفلي.</p>\n</div>`, timestamp: Timestamp.now() }]
-            };
-            state.activeProject = newProject;
-            state.historyIndex = 0;
-            if (!state.isAnonymous) {
-                state.projects = [newProject, ...state.projects];
-            }
-            render();
-        };
-        
-        const handleSelectProject = (project) => {
-            state.activeProject = project;
-            state.historyIndex = project.history.length - 1;
-            render();
-        };
-        
-        const handleImageUpload = (e) => {
-            const file = e.target.files[0];
-            if (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return;
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                state.uploadedImageBase64 = reader.result.split(',')[1];
-                state.uploadedImageType = file.type;
-                renderImagePreview();
-            };
-            reader.readAsDataURL(file);
-        };
-
-        const removeUploadedImage = () => {
-            state.uploadedImageBase64 = null;
-            state.uploadedImageType = null;
-            DOMElements.imageUploadInput.value = '';
-            renderImagePreview();
-        };
-
-        const handlePromptSubmit = async (e) => {
-            e.preventDefault();
-            if (state.isAiLoading || !DOMElements.promptInput.value.trim()) return;
-            if (state.isAnonymous && state.usageCount >= 3) {
-                DOMElements.registrationModal.classList.remove('hidden');
-                return;
-            }
-            if (!state.geminiApiKey) { alert("Gemini API key is missing."); return; }
-
-            state.isAiLoading = true;
-            render();
-            const promptText = DOMElements.promptInput.value;
-            DOMElements.promptInput.value = '';
-            const currentCode = (state.activeProject && state.historyIndex !== -1) ? state.activeProject.history[state.historyIndex].code : '';
-            
-            let parts = [];
-            let model = 'gemini-1.5-flash';
-            if (state.uploadedImageBase64) {
-                model = 'gemini-1.5-pro';
-                parts.push({ text: `Task: You are an expert web developer. The user has provided an image of a design and a text prompt. Generate a single, complete HTML file that implements the design from the image, taking into account the user's text prompt for specifics. Constraints: ONLY HTML code in response. Use Tailwind CSS via CDN. Use Google Fonts. Use placehold.co for extra images. User's Text Prompt: "${promptText}" (Analyze the following image for design.)` });
-                parts.push({ inline_data: { mime_type: state.uploadedImageType, data: state.uploadedImageBase64 } });
-            } else {
-                parts.push({ text: `Task: You are an expert web developer. Generate a single, complete HTML file based on the user's request. Constraints: ONLY HTML code in response. Use Tailwind CSS via CDN. Use Google Fonts. Use placehold.co for images. If modifying, use the "Current Code" as a base. Current Code:\n\`\`\`html\n${currentCode}\n\`\`\`\nUser Request: "${promptText}"` });
-            }
-            
-            try {
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${state.geminiApiKey}`;
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }) });
-                if (!response.ok) {
-                    const errorBody = await response.json();
-                    throw new Error(`API request failed: ${response.statusText} - ${errorBody?.error?.message || 'Unknown error'}`);
-                }
-                const result = await response.json();
-                let generatedHtml = result.candidates?.[0]?.content?.parts?.[0]?.text.replace(/^```html\n?/, '').replace(/\n?```$/, '') || "";
-                if (!generatedHtml) throw new Error("Received an empty response from the AI.");
-
-                const newHistoryEntry = { code: generatedHtml, timestamp: Timestamp.now() };
-                if (!state.activeProject) handleNewProject(); // Create a project if one doesn't exist
-                state.activeProject.history = [...(state.activeProject.history || []).slice(0, state.historyIndex + 1), newHistoryEntry];
-                state.historyIndex = state.activeProject.history.length - 1;
-
-                if (!state.isAnonymous) { await handleSaveToFirebase(true); } else { state.usageCount++; }
-            } catch (err) {
-                console.error(err);
-                alert(`حدث خطأ: ${err.message}`);
-            }
-            state.isAiLoading = false;
-            removeUploadedImage();
-            render();
-        };
-        
-        const handleSaveToFirebase = async (isAutoSave = false) => {
-            if (state.isAnonymous || !state.activeProject) {
-                if (!isAutoSave) alert("يجب تسجيل الدخول لحفظ المشاريع.");
-                return;
-            }
-            if (!isAutoSave) { state.isAiLoading = true; render(); }
-            try {
-                const projectData = {
-                    name: state.activeProject.name, createdAt: state.activeProject.createdAt || serverTimestamp(),
-                    history: state.activeProject.history.map(h => ({ code: h.code, timestamp: h.timestamp || serverTimestamp() }))
-                };
-                if (state.activeProject.id.startsWith('local-')) {
-                    const newDoc = await addDoc(collection(db, 'users', state.user.uid, 'projects'), projectData);
-                    state.activeProject.id = newDoc.id;
-                } else {
-                    await setDoc(doc(db, 'users', state.user.uid, 'projects', state.activeProject.id), projectData, { merge: true });
-                }
-                if (!isAutoSave) alert("تم حفظ المشروع بنجاح!");
-            } catch (err) {
-                console.error("Error saving project:", err);
-                if (!isAutoSave) alert("فشل حفظ المشروع.");
-            }
-            if (!isAutoSave) { state.isAiLoading = false; render(); }
-        };
-
-        const handleUndo = () => { if (state.historyIndex > 0) { state.historyIndex--; render(); } };
-        const handleRedo = () => { if (state.activeProject && state.historyIndex < state.activeProject.history.length - 1) { state.historyIndex++; render(); } };
-        const handleDownload = () => {
-            if (!state.activeProject) return;
-            const blob = new Blob([state.activeProject.history[state.historyIndex].code], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = state.activeProject.name || 'project.html'; a.click();
-            URL.revokeObjectURL(url);
-        };
-        
-        const syntaxHighlight = (rawCode) => {
-            if (!rawCode) return '';
-            return rawCode.replace(/</g, '<').replace(/>/g, '>')
-                .replace(/(<!--.*?-->)/gs, '<span class="text-gray-500 italic">$1</span>')
-                .replace(/(".*?")/g, '<span class="text-amber-300">$1</span>')
-                .replace(/(<\/?)([a-zA-Z0-9\-]+)/g, '$1<span class="text-rose-400">$2</span>')
-                .replace(/\b(class|id|style)\s*=/g, '<span class="text-cyan-300">$&</span>')
-                .replace(/\b(src|href|alt|type|rel|content|name|http-equiv|charset|lang|xmlns|viewBox|d|fill)\s*=/g, '<span class="text-violet-400">$&</span>');
-        };
-
-        // --- Event Listeners ---
-        DOMElements.loginForm.addEventListener('submit', handleAuth);
-        DOMElements.toggleAuthBtn.addEventListener('click', () => { state.isLoginMode = !state.isLoginMode; renderLoginScreen(); });
-        DOMElements.googleSignInBtn.addEventListener('click', handleGoogleSignIn);
-        DOMElements.signOutBtn.addEventListener('click', handleSignOut);
-        DOMElements.newProjectBtn.addEventListener('click', handleNewProject);
-        DOMElements.promptForm.addEventListener('submit', handlePromptSubmit);
-        DOMElements.modalLoginBtn.addEventListener('click', () => { DOMElements.registrationModal.classList.add('hidden'); state.page = 'login'; render(); });
-        DOMElements.saveBtn.addEventListener('click', () => handleSaveToFirebase(false));
-        DOMElements.undoBtn.addEventListener('click', handleUndo);
-        DOMElements.redoBtn.addEventListener('click', handleRedo);
-        DOMElements.downloadBtn.addEventListener('click', handleDownload);
-        DOMElements.imageUploadInput.addEventListener('change', handleImageUpload);
-        DOMElements.removeImageBtn.addEventListener('click', removeUploadedImage);
-
-        onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                state.user = currentUser;
-                state.isAnonymous = currentUser.isAnonymous;
-                state.page = 'app';
-                if (!state.isAnonymous) await fetchProjects(); else render();
-            } else {
-                state.user = null; state.isAnonymous = true;
-                try { await signInAnonymously(auth); } 
-                catch (error) { state.page = 'login'; render(); }
-            }
-        });
-
-        lucide.createIcons();
-    </script>
+<body class="bg-dark-bg">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>

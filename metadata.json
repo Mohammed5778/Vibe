@@ -1,0 +1,5 @@
+{
+  "name": "Nova Lab - AI Web Developer",
+  "description": "An AI-powered development environment to build, edit, and preview web applications. Features responsive layouts, multi-file project support, direct integration with the Gemini API for code generation, and the ability to import projects from public GitHub repositories or your local device.",
+  "requestFramePermissions": []
+}
