@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Sidebar } from './Sidebar';
-import { EditorPanel } from './EditorPanel';
-import { PreviewPanel } from './PreviewPanel';
-import { PromptBar } from './PromptBar';
+import { Sidebar } from '../panels/Sidebar';
+import { EditorPanel } from '../panels/EditorPanel';
+import { PreviewPanel } from '../panels/PreviewPanel';
+import { PromptBar } from '../PromptBar';
 import { Menu, X, Code, Eye } from 'lucide-react';
-import { ImageUploadPreview } from './ImageUploadPreview';
+import { ImageUploadPreview } from '../ui/ImageUploadPreview';
 
 type MobileView = 'code' | 'preview';
 

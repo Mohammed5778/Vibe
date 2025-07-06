@@ -25,4 +25,5 @@ export interface AppState {
   isNewProjectModalOpen: boolean;
   uploadedImageBase64: string | null;
   uploadedImageType: string | null;
+  isApiKeyMissing: boolean;
 }

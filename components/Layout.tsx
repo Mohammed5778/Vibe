@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { useResponsive } from './useResponsive';
-import { DesktopLayout } from './DesktopLayout';
-import { MobileLayout } from './MobileLayout';
-import { useAppContext } from './AppContext';
-import { Spinner } from './Spinner';
-import { ImportProjectModal } from './ImportProjectModal';
-import { NewProjectModal } from './NewProjectModal';
+import { useResponsive } from '../hooks/useResponsive';
+import { DesktopLayout } from './layout/DesktopLayout';
+import { MobileLayout } from './layout/MobileLayout';
+import { useAppContext } from '../context/AppContext';
+import { Spinner } from './ui/Spinner';
+import { ImportProjectModal } from './modals/ImportProjectModal';
+import { NewProjectModal } from './modals/NewProjectModal';
 import { AlertTriangle } from 'lucide-react';
 
 export const Layout: React.FC = () => {

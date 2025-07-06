@@ -1,8 +1,8 @@
 
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { AppState, Project, File } from './types';
-import { generateProjectFromPrompt, isApiKeySet } from './geminiService';
-import { importFromGitHub } from './importService';
+import { AppState, Project, File } from '../types';
+import { generateProjectFromPrompt, isApiKeySet } from '../services/geminiService';
+import { importFromGitHub } from '../services/importService';
 import JSZip from 'jszip';
 
 type Action =
@@ -282,7 +282,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const project = await importFromGitHub(url);
         dispatch({ type: 'IMPORT_PROJECT_SUCCESS', payload: project });
-      } catch (e: any)         dispatch({ type: 'AI_GENERATION_FAILURE', payload: e.message });
+      } catch (e: any) {
+         dispatch({ type: 'AI_GENERATION_FAILURE', payload: e.message });
       } finally {
         dispatch({ type: 'CLOSE_IMPORT_MODAL' });
       }

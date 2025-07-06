@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { ResizablePanel } from './ResizablePanel';
-import { Sidebar } from './Sidebar';
-import { EditorPanel } from './EditorPanel';
-import { PreviewPanel } from './PreviewPanel';
-import { PromptBar } from './PromptBar';
-import { ImageUploadPreview } from './ImageUploadPreview';
+import { ResizablePanel } from '../panels/ResizablePanel';
+import { Sidebar } from '../panels/Sidebar';
+import { EditorPanel } from '../panels/EditorPanel';
+import { PreviewPanel } from '../panels/PreviewPanel';
+import { PromptBar } from '../PromptBar';
+import { ImageUploadPreview } from '../ui/ImageUploadPreview';
 
 export const DesktopLayout: React.FC = () => {
   const [sidebarSize, setSidebarSize] = useState(20);

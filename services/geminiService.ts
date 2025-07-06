@@ -2,11 +2,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { Project, File } from '../types';
 
-if (!process.env.API_KEY) {
-  console.error("API_KEY environment variable not set. AI features will not work.");
+let ai: GoogleGenAI | null = null;
+const apiKey = process.env.API_KEY;
+
+if (apiKey) {
+  ai = new GoogleGenAI({ apiKey });
+} else {
+  console.error("API_KEY environment variable not set. AI features will be disabled.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+export const isApiKeySet = (): boolean => !!apiKey;
 
 const getPromptText = (prompt: string, existingProject: Project | null, withImage: boolean, projectName?: string): string => {
     const fileStructureInterface = `
@@ -48,6 +53,9 @@ The user has named the project: "${projectName || 'Untitled'}". Create a project
 }
 
 export const generateProjectFromPrompt = async (prompt: string, existingProject: Project | null, imageBase64: string | null, imageType: string | null, projectName?: string): Promise<Project> => {
+    if (!ai) {
+      throw new Error("AI Service is not available. Please configure the API Key.");
+    }
     try {
         const model = 'gemini-2.5-flash-preview-04-17';
         
