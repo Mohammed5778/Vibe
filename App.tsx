@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Layout } from './components/Layout';
-import { Spinner } from './components/ui/Spinner';
-import { useAppContext } from './context/AppContext';
+import { Layout } from './Layout';
+import { Spinner } from './Spinner';
+import { useAppContext } from './AppContext';
 
 const App: React.FC = () => {
     const { state } = useAppContext();

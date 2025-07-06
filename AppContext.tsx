@@ -1,7 +1,8 @@
+
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { AppState, Project, File } from '../types';
-import { generateProjectFromPrompt } from '../services/geminiService';
-import { importFromGitHub } from '../services/importService';
+import { AppState, Project, File } from './types';
+import { generateProjectFromPrompt } from './geminiService';
+import { importFromGitHub } from './importService';
 import JSZip from 'jszip';
 
 type Action =

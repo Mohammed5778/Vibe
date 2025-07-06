@@ -1,7 +1,7 @@
 
 import React, { useRef, ChangeEvent } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { FileTree } from '../ui/FileTree';
+import { useAppContext } from './AppContext';
+import { FileTree } from './FileTree';
 import { Zap, GitBranch, Github, Trash2, Import, Pencil, PlusSquare, FolderDown } from 'lucide-react';
 
 // Allow 'webkitdirectory' on input elements for folder uploads.
