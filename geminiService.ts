@@ -57,7 +57,7 @@ export const generateProjectFromPrompt = async (prompt: string, existingProject:
       throw new Error("AI Service is not available. Please configure the API Key.");
     }
     try {
-        const model = 'gemini-2.5-flash-preview-04-17';
+        const model = 'gemini-2.5-pro';
         
         const textPart = getPromptText(prompt, existingProject, !!imageBase64, projectName);
         
